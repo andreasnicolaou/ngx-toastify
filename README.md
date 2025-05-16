@@ -46,10 +46,10 @@ import { NgxToastifyService } from '@andreasnicolaou/ngx-toastify';
   template: `<button (click)="showToast()">Show Toast</button>`,
 })
 export class ExampleComponent {
-  constructor(private toastify: NgxToastifyService) {}
+  constructor(private ngxToastifyService: NgxToastifyService) {}
 
   showToast() {
-    this.toastify.success({ title: 'Success!', message: 'This is a toast message.' });
+    this.ngxToastifyService.success({ title: 'Success!', message: 'This is a toast message.' });
   }
 }
 ```
