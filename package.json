@@ -1,0 +1,45 @@
+{
+  "name": "@andreasnicolaou/ngx-toastify",
+  "version": "1.0.0",
+  "description": "Angular wrapper for @andreasnicolaou/toastify — a lightweight toast notification manager.",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andreasnicolaou/ngx-toastify.git"
+  },
+  "bugs": {
+    "url": "https://github.com/andreasnicolaou/ngx-toastify/issues"
+  },
+  "author": {
+    "name": "Andreas Nicolaou",
+    "email": "anicolaou66@gmail.com",
+    "url": "https://github.com/andreasnicolaou"
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "@andreasnicolaou/toastify": "^1.0.2",
+    "@angular/common": ">=14.0.0 <20.0.0",
+    "@angular/core": ">=14.0.0 <20.0.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "sideEffects": false,
+  "keywords": [
+    "angular",
+    "frontend",
+    "toast",
+    "toastify",
+    "notification",
+    "ngx",
+    "angular-library",
+    "toasts",
+    "angular-toast",
+    "@andreasnicolaou/ngx-toastify",
+    "@andreasnicolaou/toastify"
+  ],
+  "homepage": "https://github.com/andreasnicolaou/ngx-toastify#readme"
+}
