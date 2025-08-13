@@ -69,6 +69,7 @@ export class ExampleComponent {
 | Method    | Parameters                                                       | Description           |
 | --------- | ---------------------------------------------------------------- | --------------------- |
 | `default` | `{ title: string, message?: string }, options?: ToastifyOptions` | Shows a default toast |
+| `light`   | `{ title: string, message?: string }, options?: ToastifyOptions` | Shows a light toast |
 | `success` | `{ title: string, message?: string }, options?: ToastifyOptions` | Shows a success toast |
 | `error`   | `{ title: string, message?: string }, options?: ToastifyOptions` | Shows an error toast  |
 | `warning` | `{ title: string, message?: string }, options?: ToastifyOptions` | Shows a warning toast |
