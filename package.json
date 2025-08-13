@@ -20,7 +20,7 @@
   },
   "license": "MIT",
   "peerDependencies": {
-    "@andreasnicolaou/toastify": "^1.0.2",
+    "@andreasnicolaou/toastify": "^1.1.0",
     "@angular/common": ">=14.0.0 <20.0.0",
     "@angular/core": ">=14.0.0 <20.0.0"
   },
