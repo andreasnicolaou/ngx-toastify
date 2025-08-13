@@ -1,6 +1,6 @@
 {
   "name": "@andreasnicolaou/ngx-toastify",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Angular wrapper for @andreasnicolaou/toastify — a lightweight toast notification manager.",
   "private": false,
   "publishConfig": {
