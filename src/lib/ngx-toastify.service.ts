@@ -23,6 +23,10 @@ export class NgxToastifyService {
     this.toastify.default(title, message, options);
   }
 
+  public light({ title, message = '' }: { title: string; message: string }, options?: ToastifyOptions): void {
+    this.toastify.light(title, message, options);
+  }
+
   public success({ title, message = '' }: { title: string; message?: string }, options?: ToastifyOptions): void {
     this.toastify.success(title, message, options);
   }
