@@ -1,45 +1,48 @@
-import { Inject, Injectable, Optional } from '@angular/core';
-import { ToastifyManager, ToastifyOptions, ToastifyPosition } from '@andreasnicolaou/toastify';
-import { TOASTIFY_OPTIONS, TOASTIFY_POSITION } from './ngx-toastify.tokens';
+import { Injectable, inject } from '@angular/core';
+import { ToastifyHandle, ToastifyManager, ToastifyOptions, ToastifyPosition } from '@andreasnicolaou/toastify';
+import {
+  DEFAULT_TOASTIFY_POSITION,
+  NgxToastifyOptions,
+  TOASTIFY_OPTIONS,
+  TOASTIFY_POSITION,
+} from './ngx-toastify.tokens';
 
-@Injectable()
+type ToastContent = { title: string; message?: string };
+
+@Injectable({ providedIn: 'root' })
 export class NgxToastifyService {
-  private readonly toastify!: ToastifyManager;
+  public readonly position: ToastifyPosition;
+  public readonly options?: NgxToastifyOptions;
 
-  constructor(
-    @Inject(TOASTIFY_POSITION) public position: ToastifyPosition = 'top-right',
-    @Optional()
-    @Inject(TOASTIFY_OPTIONS)
-    public options?: ToastifyOptions & {
-      maxToasts?: number;
-      customClasses?: string;
-    }
-  ) {
-    this.toastify =
-      typeof options !== 'undefined' ? new ToastifyManager(position, options) : new ToastifyManager(position);
+  private readonly toastify: ToastifyManager;
+
+  constructor() {
+    this.position = inject(TOASTIFY_POSITION, { optional: true }) ?? DEFAULT_TOASTIFY_POSITION;
+    this.options = inject(TOASTIFY_OPTIONS, { optional: true }) ?? undefined;
+    this.toastify = new ToastifyManager(this.position, this.options);
   }
 
-  public default({ title, message = '' }: { title: string; message: string }, options?: ToastifyOptions): void {
-    this.toastify.default(title, message, options);
+  public default({ title, message = '' }: ToastContent, options?: ToastifyOptions): ToastifyHandle {
+    return this.toastify.default(title, message, options);
   }
 
-  public light({ title, message = '' }: { title: string; message: string }, options?: ToastifyOptions): void {
-    this.toastify.light(title, message, options);
+  public light({ title, message = '' }: ToastContent, options?: ToastifyOptions): ToastifyHandle {
+    return this.toastify.light(title, message, options);
   }
 
-  public success({ title, message = '' }: { title: string; message?: string }, options?: ToastifyOptions): void {
-    this.toastify.success(title, message, options);
+  public success({ title, message = '' }: ToastContent, options?: ToastifyOptions): ToastifyHandle {
+    return this.toastify.success(title, message, options);
   }
 
-  public error({ title, message = '' }: { title: string; message?: string }, options?: ToastifyOptions): void {
-    this.toastify.error(title, message, options);
+  public error({ title, message = '' }: ToastContent, options?: ToastifyOptions): ToastifyHandle {
+    return this.toastify.error(title, message, options);
   }
 
-  public warning({ title, message = '' }: { title: string; message?: string }, options?: ToastifyOptions): void {
-    this.toastify.warning(title, message, options);
+  public warning({ title, message = '' }: ToastContent, options?: ToastifyOptions): ToastifyHandle {
+    return this.toastify.warning(title, message, options);
   }
 
-  public info({ title, message = '' }: { title: string; message?: string }, options?: ToastifyOptions): void {
-    this.toastify.info(title, message, options);
+  public info({ title, message = '' }: ToastContent, options?: ToastifyOptions): ToastifyHandle {
+    return this.toastify.info(title, message, options);
   }
 }
