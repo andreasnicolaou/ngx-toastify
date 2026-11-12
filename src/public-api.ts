@@ -11,6 +11,7 @@ export type { NgxToastifyOptions } from './lib/ngx-toastify.tokens';
 // Re-exported from the core package so consumers can type their toast calls
 // without importing @andreasnicolaou/toastify directly.
 export type {
+  ToastifyAction,
   ToastifyAnimationType,
   ToastifyHandle,
   ToastifyOptions,

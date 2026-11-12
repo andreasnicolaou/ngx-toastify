@@ -19,7 +19,8 @@ npm install @andreasnicolaou/ngx-toastify @andreasnicolaou/toastify
 
 | ngx-toastify | Angular | @andreasnicolaou/toastify |
 | ------------ | ------- | ------------------------- |
-| 2.x          | 19 – 22 | ^2.2.0                    |
+| 2.1.x        | 19 – 22 | ^2.3.0                    |
+| 2.0.x        | 19 – 22 | ^2.2.0                    |
 | 1.x          | 14 – 19 | ^1.1.0                    |
 
 ## 🚀 Quick Start
@@ -88,6 +89,37 @@ handle.update({ message: 'Processing…' });
 handle.update({ type: 'success', message: 'Done!', withProgressBar: true });
 ```
 
+## 📌 Persistent toast with an action button, at another position
+
+`position` and `action` are plain `ToastifyOptions`, so they work on every method and can also be set as defaults in `provideNgxToastify({ options })`.
+
+```typescript
+this.toast.info(
+  { title: 'New version available', message: 'Reload to get the latest update.' },
+  {
+    duration: 0, // stays until dismissed
+    position: 'bottom-center', // overrides the configured position for this toast only
+    closeButton: true,
+    action: { label: 'Reload', onClick: () => location.reload() },
+  },
+);
+
+// keep the toast open and update it from the handler
+this.toast.error(
+  { title: 'Upload', message: 'Failed.' },
+  {
+    duration: 0,
+    action: {
+      label: 'Retry',
+      dismissOnClick: false,
+      onClick: (handle) => handle.update({ message: 'Retrying…', action: undefined }),
+    },
+  },
+);
+```
+
+`action.onClick` always runs inside the Angular zone (also for toasts created outside it, and for actions set later via `handle.update({ action })`), so signals and `OnPush` views update without extra work.
+
 ## 🧩 Features
 
 - Simple toast API: `default`, `light`, `success`, `error`, `warning`, `info`
@@ -96,6 +128,9 @@ handle.update({ type: 'success', message: 'Done!', withProgressBar: true });
 - Uses [`@andreasnicolaou/toastify`](https://www.npmjs.com/package/@andreasnicolaou/toastify) under the hood
 - Type-safe toast options, with core types re-exported
 - Custom CSS class support
+- Per-toast `position` and an `action` button (core `^2.3.0`)
+- SSR-safe: on the server the toast methods return an inert handle instead of touching `document`
+- Containers are removed automatically when the service's injector is destroyed
 
 ## 🛠 API
 
@@ -114,7 +149,19 @@ All methods take the same arguments and return a `ToastifyHandle`.
 
 - **`title`**: Required — the headline of the toast
 - **`message`**: Optional — the body text (defaults to `''`)
-- **`options`**: Optional — per-toast overrides, merged over the configured defaults
+- **`options`**: Optional — per-toast overrides, merged over the configured defaults (including `position` and `action`)
+
+Per-toast `ToastifyOptions`:
+
+| Option                                                                                                                     | Description                                                                              |
+| -------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `duration`, `isHtml`, `withProgressBar`, `progressBarDuration`, `closeButton`, `direction`, `showIcons`, `animationType`, `tapToDismiss`, `progressBarDirection` | See the [core package](https://www.npmjs.com/package/@andreasnicolaou/toastify)          |
+| `position`                                                                                                                 | Any `ToastifyPosition`. Shows this toast in another container; defaults to the configured position |
+| `action`                                                                                                                   | `ToastifyAction`: `{ label, onClick(handle), dismissOnClick? }`. Dismisses after click unless `dismissOnClick: false` |
+
+With a per-toast `position`, `maxToasts` and `newestOnTop` apply per position. `handle.update()` accepts everything except `position`.
+
+**Server-side rendering:** the service can be constructed on the server; the toast methods return a no-op `ToastifyHandle` there (nothing is rendered). **Teardown:** when the service's injector is destroyed, every container it created is removed from the DOM.
 
 ### Configuration
 
@@ -133,15 +180,15 @@ All methods take the same arguments and return a `ToastifyHandle`.
 | `customClasses` | `string`  | Extra CSS classes applied to the container |
 | `newestOnTop`   | `boolean` | Whether new toasts stack on top            |
 
-Per-toast `ToastifyOptions` (`duration`, `isHtml`, `withProgressBar`, `progressBarDuration`, `closeButton`, `direction`, `showIcons`, `animationType`, `tapToDismiss`, `progressBarDirection`) are documented in the [core package](https://www.npmjs.com/package/@andreasnicolaou/toastify).
+Per-toast `ToastifyOptions` are documented above and in the [core package](https://www.npmjs.com/package/@andreasnicolaou/toastify).
 
 ### Exports
 
-`NgxToastifyService`, `NgxToastifyModule`, `provideNgxToastify`, `TOASTIFY_POSITION`, `TOASTIFY_OPTIONS`, `DEFAULT_TOASTIFY_POSITION`, and the types `NgxToastifyConfig`, `NgxToastifyOptions`. The core types `ToastifyHandle`, `ToastifyOptions`, `ToastifyPosition`, `ToastifyType`, `ToastifyAnimationType`, and `ToastifyUpdateOptions` are re-exported so you don't need to import from the core package directly.
+`NgxToastifyService`, `NgxToastifyModule`, `provideNgxToastify`, `TOASTIFY_POSITION`, `TOASTIFY_OPTIONS`, `DEFAULT_TOASTIFY_POSITION`, and the types `NgxToastifyConfig`, `NgxToastifyOptions`. The core types `ToastifyAction`, `ToastifyHandle`, `ToastifyOptions`, `ToastifyPosition`, `ToastifyType`, `ToastifyAnimationType`, and `ToastifyUpdateOptions` are re-exported so you don't need to import from the core package directly.
 
 ## 🎨 Styles
 
-To include the styles from @andreasnicolaou/toastify, add the CSS manually:
+The stylesheet is **not** injected at runtime (neither by this library nor by core 2.3.0 of `@andreasnicolaou/toastify`), so add it yourself through `angular.json`:
 
 ```jsonc
 // angular.json
@@ -149,6 +196,14 @@ To include the styles from @andreasnicolaou/toastify, add the CSS manually:
   "node_modules/@andreasnicolaou/toastify/dist/styles.css"
 ]
 ```
+
+Because no `<style>` element is created and no `style` attribute is written, this is **CSP-friendly**: a strict `style-src` (without `'unsafe-inline'`) works. The action button can be restyled via `.noap-toastify-action` or the CSS variables `--noap-toastify-action-bg`, `--noap-toastify-action-fg`, `--noap-toastify-action-hover-bg`, `--noap-toastify-action-hover-fg`.
+
+## ⬆️ Upgrading from 2.0 to 2.1
+
+- Requires `@andreasnicolaou/toastify` **^2.3.0** (was `^2.2.0`). No signature changes; all additions are backward compatible.
+- `action.onClick` callbacks now run inside `NgZone`.
+- Toasts are no-ops on the server instead of throwing.
 
 ## ⬆️ Migrating from 1.x
 
